@@ -52,8 +52,10 @@ class AudioViewModel @Inject constructor(
 
     private val serviceConnection = serviceConnection.also {
 
+        updatePlayBack()
     }
-    val currentDuration = MediaPlayerService.currentDuration
+    val currentDuration:Long
+    get() = MediaPlayerService.currentDuration
 
     var currentAudioProgress = mutableStateOf(0f)
 
@@ -107,6 +109,32 @@ class AudioViewModel @Inject constructor(
         }
     }
 
+    private fun updatePlayBack(){
+        viewModelScope.launch {
+
+            val position = playBackState.value?.currentPosition ?: 0
+            if (currentPlayBackPosition != position){
+                currentPlayBackPosition = position
+            }
+            if (currentDuration > 0 ){
+                currentAudioProgress.value = (
+                        currentPlayBackPosition.toFloat()
+                                /currentDuration.toFloat() * 100f
+                        )
+            }
+
+            delay(constants.PLAYBACK_UPDATE_INTERVAL)
+
+            if (updatePosition){
+
+                updatePlayBack()
+
+            }
+        }
+    }
+
+
+
     fun stopPlayBack(){
         serviceConnection.transportControll.stop()
     }
@@ -127,30 +155,6 @@ class AudioViewModel @Inject constructor(
         serviceConnection.transportControll.seekTo(
             (currentDuration * value / 100f).toLong()
         )
-    }
-
-    private fun updatePlayBack(){
-        viewModelScope.launch {
-
-            val position = playBackState.value?.currentPosition ?: 0
-            if (currentPlayBackPosition != position){
-                currentPlayBackPosition = position
-            }
-            if (currentDuration > 0 ){
-                currentAudioProgress.value = (
-                        currentPlayBackPosition.toFloat()
-                        /currentDuration.toFloat() * 100f
-                        )
-            }
-
-            delay(constants.PLAYBACK_UPDATE_INTERVAL)
-
-            if (updatePosition){
-
-                updatePlayBack()
-
-            }
-        }
     }
 
     override fun onCleared() {

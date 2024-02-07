@@ -12,31 +12,31 @@ import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 import javax.inject.Inject
 
 class MediaSource  @Inject
-    constructor(private val repository: AudioRepository){
+constructor(private val repository: AudioRepository){
 
     private val onReadyListeners:MutableList<OnReadyListener> = mutableListOf()
 
-    public var audioMediaMetaData : List<MediaMetadataCompat> = emptyList()
+    var audioMediaMetaData : List<MediaMetadataCompat> = emptyList()
 
     private var state:AudioSourceState = AudioSourceState.STATE_CREATED
-    set(value)   {
-        if (value == AudioSourceState.STATE_CREATED
-            || value == AudioSourceState.STATE_ERROR){
-            synchronized(onReadyListeners){
-                field = value
-                onReadyListeners.forEach{listener:OnReadyListener ->
-                    listener.invoke(isReady)
+        set(value)   {
+            if (value == AudioSourceState.STATE_CREATED
+                || value == AudioSourceState.STATE_ERROR){
+                synchronized(onReadyListeners){
+                    field = value
+                    onReadyListeners.forEach{listener:OnReadyListener ->
+                        listener.invoke(isReady)
 
+                    }
                 }
             }
+            else{
+                field = value
+            }
         }
-        else{
-            field = value
-        }
-    }
 
     private val isReady:Boolean
-    get() = state == AudioSourceState.STATE_INITIALIZED
+        get() = state == AudioSourceState.STATE_INITIALIZED
 
     fun onReady(listener: OnReadyListener):Boolean{
         return if (state == AudioSourceState.STATE_CREATED
@@ -96,10 +96,10 @@ class MediaSource  @Inject
 
 
     fun asMediaSource(dataSource: CacheDataSource.Factory)
-    :ConcatenatingMediaSource{
+            :ConcatenatingMediaSource{
 
         val concatenatingMediaSource = ConcatenatingMediaSource()
-        audioMediaMetaData.forEach{mediaMetadataCompat ->  
+        audioMediaMetaData.forEach{mediaMetadataCompat ->
             val mediaItem = MediaItem.fromUri(
                 mediaMetadataCompat.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI)
             )

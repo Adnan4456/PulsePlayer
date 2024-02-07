@@ -13,7 +13,6 @@ import javax.inject.Inject
 class ContentResolverHelper @Inject
 constructor(@ApplicationContext val context: Context) {
 
-
     private var mCursor: Cursor? = null
 
     private val projection: Array<String> = arrayOf(
@@ -43,7 +42,7 @@ constructor(@ApplicationContext val context: Context) {
     private fun getCursorData(): MutableList<Audio>{
         val audioList = mutableListOf<Audio>()
         mCursor =  context.contentResolver.query(
-            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+            Media.EXTERNAL_CONTENT_URI,
             projection,
             selectionClause,
             selectionArg,
@@ -71,7 +70,7 @@ constructor(@ApplicationContext val context: Context) {
                         val duration = getInt(durationColumn)
                         val title = getString(titleColumn)
                         val uri = ContentUris.withAppendedId(
-                            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                            Media.EXTERNAL_CONTENT_URI,
                             id
                         )
                         audioList += Audio(

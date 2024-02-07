@@ -18,6 +18,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.musicplayer.presentation.ui.AudioViewModel
+import com.example.musicplayer.presentation.ui.HomeScreen
 import com.example.musicplayer.ui.theme.MusicPlayerTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
@@ -63,6 +64,25 @@ class MainActivity : ComponentActivity() {
                             modelClass = AudioViewModel::class.java
                         )
                         val audioList = audioViewModel.audioList
+
+                        HomeScreen(
+                            progress = audioViewModel.currentAudioProgress.value,
+                            onProgressChange ={
+                                              audioViewModel.seekTo(it)
+                            } ,
+                            isAudioPlaying = audioViewModel.isAudioPlaying,
+                            audioList = audioViewModel.audioList,
+                            currentPlayingAudio =audioViewModel.currentPlayingAudio.value ,
+                            onStart = {
+                                      audioViewModel.playAudio(it)
+                            } ,
+                            onItemClick = {
+                                audioViewModel.playAudio(it)
+                            },
+                            onNext = {
+                                audioViewModel.skipToNext()
+                            },
+                        )
                     }else
                     {
                         Box(contentAlignment = Alignment.Center){

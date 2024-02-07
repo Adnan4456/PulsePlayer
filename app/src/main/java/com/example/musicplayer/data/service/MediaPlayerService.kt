@@ -3,7 +3,6 @@ package com.example.musicplayer.data.service
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.Intent
-import android.media.MediaDescription
 import android.net.Uri
 import android.os.Bundle
 import android.os.ResultReceiver
@@ -12,6 +11,7 @@ import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.media.MediaBrowserServiceCompat
@@ -119,30 +119,31 @@ class MediaPlayerService : MediaBrowserServiceCompat (){
         parentId: String,
         result: Result<MutableList<MediaBrowserCompat.MediaItem>>
     ) {
-       when(parentId){
-           constants.MEDIA_ROOT_ID ->{
-               val resultsSent = mediaSource.whenReady{isInitialized ->
+        when(parentId){
+            constants.MEDIA_ROOT_ID ->{
+                val resultsSent = mediaSource.whenReady{isInitialized ->
 
-                   if (isInitialized){
-                       result.sendResult(mediaSource.asMediaItem())
-                   }else
-                   {
-                       result.sendResult(null)
-                   }
-               }
+                    if (isInitialized){
+                        result.sendResult(mediaSource.asMediaItem())
+                    }else
+                    {
+                        result.sendResult(null)
+                    }
+                }
 
-               if(!resultsSent){
-                   result.detach()
-               }
+                if(!resultsSent){
+                    result.detach()
+                }
 
 
-           }
+            }
 
-           else-> Unit
-       }
+            else-> Unit
+        }
     }
 
     override fun onCustomAction(action: String, extras: Bundle?, result: Result<Bundle>) {
+        super.onCustomAction(action, extras, result)
         when(action){
             constants.START_MEDIA_PLAY_ACTION ->{
                 mediaPlayerNotificationManager.showNotification(player = exoPlayer)
@@ -174,13 +175,16 @@ class MediaPlayerService : MediaBrowserServiceCompat (){
             notification: Notification,
             ongoing: Boolean
         ) {
+            Log.d("Notification id = ",""+ notificationId)
             if (ongoing && !isForegroundService) {
 
-                ContextCompat.startForegroundService(applicationContext,
-                Intent(
+                ContextCompat.startForegroundService(
                     applicationContext,
-                    this@MediaPlayerService.javaClass)
+                    Intent(
+                        applicationContext,
+                        this@MediaPlayerService.javaClass)
                 )
+
                 startForeground(notificationId, notification)
                 isForegroundService = true
             }
@@ -194,14 +198,14 @@ class MediaPlayerService : MediaBrowserServiceCompat (){
     }
 
     inner class AudioPlayBackPrepare:
-            MediaSessionConnector.PlaybackPreparer{
+        MediaSessionConnector.PlaybackPreparer{
         override fun onCommand(
             player: Player,
             command: String,
             extras: Bundle?,
             cb: ResultReceiver?
         ): Boolean {
-           return false
+            return false
         }
 
         override fun getSupportedPrepareActions(): Long {
@@ -210,7 +214,7 @@ class MediaPlayerService : MediaBrowserServiceCompat (){
         }
 
         override fun onPrepare(playWhenReady: Boolean) {
-            return Unit
+            return
         }
 
         override fun onPrepareFromMediaId(
@@ -220,7 +224,7 @@ class MediaPlayerService : MediaBrowserServiceCompat (){
         ) {
             mediaSource.whenReady {
                 val itemToPlay = mediaSource.audioMediaMetaData.find {
-                it.description.mediaId == mediaId
+                    it.description.mediaId == mediaId
                 }
 
                 currentPlayingMedia = itemToPlay
@@ -236,13 +240,13 @@ class MediaPlayerService : MediaBrowserServiceCompat (){
         }
 
         override fun onPrepareFromSearch(query: String, playWhenReady: Boolean, extras: Bundle?) {
-            return Unit
+            return
         }
 
         override fun onPrepareFromUri(uri: Uri, playWhenReady: Boolean, extras: Bundle?) {
-           return Unit
+            return
         }
-            }
+    }
 
 
     inner class MediaQueueNavigator(

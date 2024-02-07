@@ -19,6 +19,7 @@ internal class MediaPlayerNotificationManager (
     private val notificationManager:PlayerNotificationManager
 
     init {
+
         val mediaController = MediaControllerCompat(context , sessionToken)
 
         val builder = PlayerNotificationManager.Builder(
@@ -29,7 +30,7 @@ internal class MediaPlayerNotificationManager (
         with(builder){
             setMediaDescriptionAdapter(DescriptionAdapter(mediaController))
             setNotificationListener(notificationListener)
-            setChannelDescriptionResourceId(R.string.notification_channel)
+            setChannelNameResourceId(R.string.notification_channel)
             setChannelDescriptionResourceId(R.string.notification_channel_description)
         }
 
@@ -52,10 +53,10 @@ internal class MediaPlayerNotificationManager (
 
 
     inner class DescriptionAdapter(private val controller: MediaControllerCompat):
-            PlayerNotificationManager.MediaDescriptionAdapter{
+        PlayerNotificationManager.MediaDescriptionAdapter{
 
         override fun getCurrentContentTitle(player: Player): CharSequence {
-           return controller.metadata.description.title.toString()
+            return controller.metadata.description.title.toString()
         }
 
         override fun createCurrentContentIntent(player: Player): PendingIntent? {

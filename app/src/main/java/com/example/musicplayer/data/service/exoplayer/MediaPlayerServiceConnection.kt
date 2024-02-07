@@ -16,15 +16,15 @@ import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 class MediaPlayerServiceConnection @Inject
-    constructor(@ApplicationContext context: Context){
+constructor(@ApplicationContext context: Context){
 
     private val _playBackState:MutableStateFlow<PlaybackStateCompat?> =
         MutableStateFlow(null)
 
-    public val _isConnected:MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val _isConnected:MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     val playBackState:StateFlow<PlaybackStateCompat?>
-    get() = _playBackState
+        get() = _playBackState
 
     lateinit var mediaControllerCompat: MediaControllerCompat
 
@@ -44,10 +44,10 @@ class MediaPlayerServiceConnection @Inject
     private var audioList = listOf<Audio>()
 
     val rootMediaId:String
-    get() = mediaBrowser.root
+        get() = mediaBrowser.root
 
     val transportControll:MediaControllerCompat.TransportControls
-    get() = mediaControllerCompat.transportControls
+        get() = mediaControllerCompat.transportControls
 
     fun playAudio(audios:List<Audio>){
         audioList = audios
