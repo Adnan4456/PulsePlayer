@@ -10,4 +10,5 @@ data class Audio (
     val data: String,
     val duration:Int,
     val title:String,
+    val album:String
 )
