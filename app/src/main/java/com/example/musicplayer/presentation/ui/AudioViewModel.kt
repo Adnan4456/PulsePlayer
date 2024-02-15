@@ -125,7 +125,7 @@ class AudioViewModel @Inject constructor(
 
             delay(constants.PLAYBACK_UPDATE_INTERVAL)
 
-            if (updatePosition){
+            if (updatePosition) {
 
                 updatePlayBack()
 
@@ -134,24 +134,23 @@ class AudioViewModel @Inject constructor(
     }
 
 
+//    fun stopPlayBack(){
+//        serviceConnection.transportControll.stop()
+//    }
 
-    fun stopPlayBack(){
-        serviceConnection.transportControll.stop()
-    }
+//    fun fastForward(){
+//        serviceConnection.fastForward()
+//    }
+//
+//    fun rewind(){
+//        serviceConnection.rewind()
+//    }
 
-    fun fastForward(){
-        serviceConnection.fastForward()
-    }
-
-    fun rewind(){
-        serviceConnection.rewind()
-    }
-
-    fun skipToNext(){
+    fun skipToNext() {
         serviceConnection.skipToNext()
     }
 
-    fun seekTo(value:Float){
+    fun seekTo(value: Float) {
         serviceConnection.transportControll.seekTo(
             (currentDuration * value / 100f).toLong()
         )
