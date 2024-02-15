@@ -22,6 +22,8 @@ constructor(@ApplicationContext val context: Context) {
         MediaStore.Audio.AudioColumns.DATA,
         MediaStore.Audio.AudioColumns.DURATION,
         MediaStore.Audio.AudioColumns.TITLE,
+        MediaStore.Audio.AudioColumns.ALBUM,
+//        MediaStore.Audio.Albums.ALBUM_ART
 
     )
 
@@ -56,6 +58,7 @@ constructor(@ApplicationContext val context: Context) {
             val dataColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DATA)
             val durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DURATION)
             val titleColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.TITLE)
+            val albumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM)
 
             cursor.apply {
                 if (count == 0 ){
@@ -73,8 +76,11 @@ constructor(@ApplicationContext val context: Context) {
                             Media.EXTERNAL_CONTENT_URI,
                             id
                         )
+                        val album = getString(albumColumn)
+                        Log.d("album" , album.toString())
+
                         audioList += Audio(
-                            uri , displayName, id , artist , data , duration , title
+                            uri , displayName, id , artist , data , duration , title , album
                         )
                     }
                 }
