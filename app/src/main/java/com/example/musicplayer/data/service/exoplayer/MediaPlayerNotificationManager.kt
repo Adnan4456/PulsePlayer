@@ -50,8 +50,6 @@ internal class MediaPlayerNotificationManager (
     fun hideNotification(){
         notificationManager.setPlayer(null)
     }
-
-
     inner class DescriptionAdapter(private val controller: MediaControllerCompat):
         PlayerNotificationManager.MediaDescriptionAdapter{
 
