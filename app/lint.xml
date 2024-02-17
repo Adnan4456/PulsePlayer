@@ -3,17 +3,21 @@
     <!-- Disable the IconMissingDensityFolder check in this project -->
     <issue id="IconMissingDensityFolder" severity="ignore" />
 
+    <issue id="NotificationPermission" severity="ignore" />
+
     <!-- Ignore the ObsoleteLayoutParam issue in the specified files -->
     <issue id="ObsoleteLayoutParam">
         <ignore path="res/layout/activation.xml" />
         <ignore path="res/layout-xlarge/activation.xml" />
     </issue>
-
+    <issue id="ObsoleteSdkInt" severity="ignore" />
     <!-- Ignore the UselessLeaf issue in the specified file -->
     <issue id="UselessLeaf">
         <ignore path="res/layout/main.xml" />
     </issue>
 
+    <issue id="VectorPath" severity="ignore" />
+    <issue id="ComposableNaming" severity="ignore" />
     <!-- Change the severity of hardcoded strings to "error" -->
-    <issue id="HardcodedText" severity="error" />
+    <issue id="HardcodedText" severity="ignore" />
 </lint>

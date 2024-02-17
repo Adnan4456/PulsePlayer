@@ -11,7 +11,6 @@ import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.media.MediaBrowserServiceCompat
@@ -20,7 +19,6 @@ import com.example.musicplayer.data.service.exoplayer.MediaPlayerNotificationMan
 import com.example.musicplayer.data.service.exoplayer.MediaSource
 import com.example.musicplayer.data.utils.constants
 import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaMetadata
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
@@ -55,7 +53,7 @@ class MediaPlayerService : MediaBrowserServiceCompat (){
 
     private var currentPlayingMedia: MediaMetadataCompat? = null
 
-    private val isPlayerInitialized = false
+//    private val isPlayerInitialized = false
 
     var isForegroundService: Boolean = false
 
@@ -134,8 +132,6 @@ class MediaPlayerService : MediaBrowserServiceCompat (){
                 if(!resultsSent){
                     result.detach()
                 }
-
-
             }
 
             else-> Unit
@@ -175,7 +171,7 @@ class MediaPlayerService : MediaBrowserServiceCompat (){
             notification: Notification,
             ongoing: Boolean
         ) {
-            Log.d("Notification id = ",""+ notificationId)
+
             if (ongoing && !isForegroundService) {
 
                 ContextCompat.startForegroundService(
@@ -191,7 +187,6 @@ class MediaPlayerService : MediaBrowserServiceCompat (){
         }
         override fun onNotificationCancelled(notificationId: Int, dismissedByUser: Boolean) {
             stopForeground(STOP_FOREGROUND_REMOVE)
-            //stopForeground(true) // it is deprecated
             isForegroundService  = false
             stopSelf()
         }
@@ -235,10 +230,7 @@ class MediaPlayerService : MediaBrowserServiceCompat (){
                     playWhenReady = playWhenReady
                 )
             }
-
-
         }
-
         override fun onPrepareFromSearch(query: String, playWhenReady: Boolean, extras: Bundle?) {
             return
         }
@@ -260,7 +252,6 @@ class MediaPlayerService : MediaBrowserServiceCompat (){
             }
             return MediaDescriptionCompat.Builder().build()
         }
-
     }
 
     private fun preparePlayer(
