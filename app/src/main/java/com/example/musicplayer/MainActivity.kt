@@ -43,7 +43,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.musicplayer.presentation.ui.AudioViewModel
 import com.example.musicplayer.presentation.ui.HomeScreen
 import com.example.musicplayer.presentation.ui.navigationdrawer.NavigationItem
-import com.example.musicplayer.ui.theme.MusicPlayerTheme
+import com.example.musicplayer.ui.theme.MusicTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,17 +56,18 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MusicPlayerTheme {
+            MusicTheme {
 
                 val permissionState = rememberPermissionState(
-                    permission = android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                    permission = android.Manifest.permission.READ_EXTERNAL_STORAGE
+                )
 
                 val lifecycleOwner = LocalLifecycleOwner.current
 
-                DisposableEffect(key1 =lifecycleOwner ){
-                    val  observer = LifecycleEventObserver{_ , event ->
+                DisposableEffect(key1 = lifecycleOwner) {
+                    val observer = LifecycleEventObserver { _, event ->
 
-                        if (event== Lifecycle.Event.ON_RESUME){
+                        if (event == Lifecycle.Event.ON_RESUME) {
                             permissionState.launchPermissionRequest()
                         }
                     }
@@ -273,22 +274,26 @@ fun Navigation(navController: NavHostController ,
     NavHost(navController, startDestination = NavigationItem.Home.route){
         composable(NavigationItem.Home.route){
             HomeScreen(
+//            NowPlayingScreen(
                 progress = audioViewModel.currentAudioProgress.value,
                 onProgressChange ={
                     audioViewModel.seekTo(it)
                 } ,
                 isAudioPlaying = audioViewModel.isAudioPlaying,
                 audioList = audioViewModel.audioList,
-                currentPlayingAudio =audioViewModel.currentPlayingAudio.value ,
+                currentPlayingAudio = audioViewModel.currentPlayingAudio.value,
                 onStart = {
                     audioViewModel.playAudio(it)
-                } ,
+                },
                 onItemClick = {
                     audioViewModel.playAudio(it)
                 },
                 onNext = {
                     audioViewModel.skipToNext()
                 },
+                onPrevious = {
+                    audioViewModel.skipToPrevious()
+                }
             )
         }
 

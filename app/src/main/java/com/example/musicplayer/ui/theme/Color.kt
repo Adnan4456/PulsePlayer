@@ -13,3 +13,26 @@ val Blue500 = Color(0xFF483974)
 val Blue700 = Color(0xFF1c1348)
 val Orange200 = Color(0xFFeb7603)
 val TextColour = Color(0xFFffffff)
+
+
+sealed class ThemeColor(
+    val background: Color,
+    val surface: Color,
+    val primary: Color,
+    val text: Color,
+) {
+
+    object Night : ThemeColor(
+        background = Color(0xC4000000),
+        surface = Color(0xFF000000),
+        primary = Color(0xFF4FB64C),
+        text = Color(0xffffffff)
+    )
+
+    object Day : ThemeColor(
+        background = Color(0xffffffff),
+        surface = Color(0xffffffff),
+        primary = Color(0xE8FFC107),
+        text = Color(0xFF000000)
+    )
+}

@@ -1,6 +1,5 @@
 package com.example.musicplayer.presentation.ui
 
-import android.util.Log
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,8 +12,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,6 +33,12 @@ import androidx.core.net.toUri
 import com.example.musicplayer.R
 import com.example.musicplayer.data.model.Audio
 import com.example.musicplayer.data.utils.GradientAndBrush
+import com.example.musicplayer.extension.currentFraction
+import com.example.musicplayer.presentation.ui.bottomsheet.SheetContent
+import com.example.musicplayer.presentation.ui.bottomsheet.collapsed.SheetCollapsed
+import com.example.musicplayer.presentation.ui.bottomsheet.expanded.SheetExpanded
+import com.example.musicplayer.presentation.ui.bottomsheet.expanded.controller.PlayerScreenLarge
+import kotlinx.coroutines.launch
 
 
 private val dummyAudioList = listOf(
@@ -106,32 +114,76 @@ fun HomeScreen(
     audioList: List<Audio>,
     currentPlayingAudio: Audio?,
     onStart: (Audio) -> Unit,
-    onItemClick:(Audio) -> Unit,
-    onNext: () -> Unit
+    onItemClick: (Audio) -> Unit,
+    onNext: () -> Unit,
+    onPrevious: () -> Unit
 ) {
 
-    val scaffoldState = rememberBottomSheetScaffoldState()
-    val animatedHeight by animateDpAsState(
-        targetValue = if (currentPlayingAudio == null)  0.dp
-                       else BottomSheetScaffoldDefaults.SheetPeekHeight
+    val scaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberBottomSheetState(BottomSheetValue.Collapsed)
     )
+    val scope = rememberCoroutineScope()
+
+    val animatedHeight by animateDpAsState(
+        targetValue = if (currentPlayingAudio == null) 0.dp
+        else BottomSheetScaffoldDefaults.SheetPeekHeight
+    )
+    val radius = (30 * scaffoldState.currentFraction).dp
+
+    val sheetToggle: () -> Unit = {
+        scope.launch {
+            if (scaffoldState.bottomSheetState.isCollapsed) {
+                scaffoldState.bottomSheetState.expand()
+            } else {
+                scaffoldState.bottomSheetState.collapse()
+            }
+        }
+    }
 
     BottomSheetScaffold(
-        backgroundColor = colorResource(id = R.color.background),
-        sheetContent ={
-            currentPlayingAudio?.let{
+        scaffoldState = scaffoldState,
+        modifier = Modifier.fillMaxSize(),
+        sheetGesturesEnabled = true,
+        topBar = {
+//            TopBar()
+        },
+        sheetShape = RoundedCornerShape(topStart = radius, topEnd = radius),
+        sheetContent = {
+            SheetContent {
 
-                BottomBarPlayer(
-                    progress = progress,
-                    onProgressChange = onProgressChange,
-                    audio = currentPlayingAudio,
-                    isAudioPlying = isAudioPlaying,
-                    onStart = { onStart.invoke(currentPlayingAudio) } ,
-                    onNext = {onNext.invoke()}
-                    )
+                SheetExpanded {
+
+                    currentPlayingAudio?.displayName?.let {
+                        PlayerScreenLarge(
+                            icon = "R.drawable.music",
+                            name = it,
+                            progress = progress,
+                            onProgressChange = onProgressChange,
+                            audio = currentPlayingAudio,
+                            isAudioPlying = isAudioPlaying,
+                            onStart = { onStart.invoke(currentPlayingAudio) },
+                            onNext = { onNext.invoke() },
+                            onPrevious = { onPrevious.invoke() }
+                        )
+                    }
+                }
+                SheetCollapsed(
+                    isCollapsed = scaffoldState.bottomSheetState.isCollapsed,
+                    currentFraction = scaffoldState.currentFraction,
+                    onSheetClick = sheetToggle
+                ) {
+                    currentPlayingAudio?.let {
+                        BottomBarPlayer(
+                            audio = currentPlayingAudio,
+                            isAudioPlying = isAudioPlaying,
+                            onStart = { onStart.invoke(currentPlayingAudio) },
+                            onNext = { onNext.invoke() },
+                            onPrevious = { onPrevious.invoke() }
+                        )
+                    }
+                }
             }
         },
-        scaffoldState = scaffoldState,
         sheetPeekHeight = animatedHeight
     ) {
         LazyColumn(
@@ -148,26 +200,17 @@ fun HomeScreen(
 }
 @Composable
 fun BottomBarPlayer(
-    progress:Float,
-    onProgressChange: (Float) -> Unit,
     audio: Audio,
     isAudioPlying: Boolean,
     onStart: () -> Unit,
-    onNext: () -> Unit
+    onNext: () -> Unit,
+    onPrevious: () -> Unit
 ){
     Column(
-        modifier = Modifier.background(color = colorResource(R.color.background))
+        modifier = Modifier
+            .padding(bottom = 10.dp)
+            .background(color = colorResource(R.color.background))
     ) {
-        //slider on move
-        Slider(
-            colors = SliderDefaults.colors(
-                thumbColor = MaterialTheme.colors.onBackground,
-                activeTrackColor = MaterialTheme.colors.onBackground,
-                inactiveTrackColor = MaterialTheme.colors.onPrimary,
-            ),
-            value = progress ,
-            onValueChange = {onProgressChange.invoke(it)},
-            valueRange = 0f..100f,)
         Row(
             modifier = Modifier
                 .height(50.dp)
@@ -175,9 +218,7 @@ fun BottomBarPlayer(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
-
-            Column(modifier = Modifier.clickable { 
-                Log.d("Click id = ", "${audio.id}")
+            Column(modifier = Modifier.clickable {
             }) {
                 ArtistInfo(
                     modifier = Modifier.weight(0.8f),
@@ -185,16 +226,12 @@ fun BottomBarPlayer(
                     isAudioPlying = isAudioPlying,
                 )
             }
-//            ArtistInfo(
-//                modifier = Modifier.weight(0.8f),
-//                audio = audio,
-//                isAudioPlying = isAudioPlying,
-//            )
 
             MediaPlayerController(
                 isAudioPlying = isAudioPlying,
-                onStart = {onStart.invoke()},
-                onNext = {onNext.invoke()}
+                onStart = { onStart.invoke() },
+                onNext = { onNext.invoke() },
+                onPrevious = { onPrevious.invoke() },
             )
             Spacer(modifier = Modifier.width(10.dp))
         }
@@ -378,29 +415,53 @@ fun  PlayerIconItem(
             },
     ) {
 
-        Box (
-//            modifier = Modifier.padding(4.dp),
+        Box(
+            modifier = Modifier.padding(4.dp),
             contentAlignment = Alignment.Center,
-        ){
+        ) {
             Icon(imageVector = icon, contentDescription = "")
         }
 
     }
-    
+}
+
+@Composable
+fun TopBar() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier.padding(start = 16.dp),
+            text = stringResource(id = R.string.app_name),
+            style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold)
+        )
+    }
 }
 
 @Composable
 fun MediaPlayerController(
     isAudioPlying: Boolean,
     onStart: () -> Unit,
-    onNext: () -> Unit
-){
+    onNext: () -> Unit,
+    onPrevious: () -> Unit
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .height(56.dp)
             .padding(4.dp)
     ) {
+
+        Icon(imageVector = Icons.Default.SkipPrevious, contentDescription = "Previous Song",
+            modifier = Modifier
+                .clickable {
+                    onPrevious.invoke()
+                })
+        Spacer(modifier = Modifier.size(8.dp))
 
         PlayerIconItem(
             icon = if (isAudioPlying) Icons.Default.Pause
@@ -410,10 +471,11 @@ fun MediaPlayerController(
         }
 
         Spacer(modifier = Modifier.size(8.dp))
-        Icon(imageVector = Icons.Default.SkipNext, contentDescription = null,
-        modifier = Modifier.clickable {
-            onNext.invoke()
-        })
+        Icon(
+            imageVector = Icons.Default.SkipNext, contentDescription = null,
+            modifier = Modifier.clickable {
+                onNext.invoke()
+            })
     }
 }
 
@@ -422,14 +484,6 @@ fun MediaPlayerController(
 fun BottomBarPreview() {
 
     MaterialTheme{
-        BottomBarPlayer(
-            progress = 50f,
-            onProgressChange = {},
-            audio = dummyAudioList[0],
-            isAudioPlying =true ,
-            onStart = { /*TODO*/ }) {
-            
-        }
     }
 }
 
@@ -444,10 +498,10 @@ fun HomeScreenPrev() {
             audioList = dummyAudioList,
             currentPlayingAudio = dummyAudioList[0],
             onStart = {},
-            onItemClick = {}
-        ) {
-
-        }
+            onItemClick = {},
+            onPrevious = {},
+            onNext = {},
+        )
     }
 
 }

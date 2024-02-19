@@ -60,22 +60,26 @@ constructor(@ApplicationContext context: Context){
         }
     }
 
-    fun rewind(seconds:Int = 10) {
+    fun rewind(seconds: Int = 10) {
         playBackState.value?.currentPosition?.let {
             transportControll.seekTo(it - seconds * 1000)
         }
     }
 
-    fun skipToNext(){
+    fun skipToNext() {
         transportControll.skipToNext()
     }
 
-    fun subscribe(
-        parentId:String,
-        callBack:MediaBrowserCompat.SubscriptionCallback
-    ){
+    fun skipToPrevious() {
+        transportControll.skipToPrevious()
+    }
 
-        mediaBrowser.subscribe(parentId,callBack)
+    fun subscribe(
+        parentId: String,
+        callBack: MediaBrowserCompat.SubscriptionCallback
+    ) {
+
+        mediaBrowser.subscribe(parentId, callBack)
     }
 
     fun unsubscribe(
