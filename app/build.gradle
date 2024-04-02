@@ -128,8 +128,12 @@ dependencies {
     //noinspection GradleDependency
     implementation "androidx.navigation:navigation-compose:$nav_version"
 
+
+//    implementation "com.github.bumptech.glide:compose:1.0.0-beta01"
+
+
     //coil
-//    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("io.coil-kt:coil-compose:2.4.0")
 
     //Material design 3 screen size for adapative layout
     //noinspection GradleDependency

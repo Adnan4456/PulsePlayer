@@ -175,7 +175,8 @@ private val dummyAudioList = listOf(
         data = "",
         duration = 12345,
         title = "Android Programming",
-        album = "album"
+        album = "album",
+        albumArtUri = "album".toUri(),
     ),
     Audio(
         uri = "".toUri(),
@@ -185,7 +186,8 @@ private val dummyAudioList = listOf(
         data = "",
         duration = 25678,
         title = "Android Programming",
-        album = "album"
+        album = "album",
+        albumArtUri = "album".toUri(),
     ),
     Audio(
         uri = "".toUri(),
@@ -195,7 +197,8 @@ private val dummyAudioList = listOf(
         data = "",
         duration = 8765454,
         title = "Android Programming",
-        album = "album"
+        album = "album",
+        albumArtUri = "album".toUri(),
     ),
     Audio(
         uri = "".toUri(),
@@ -205,7 +208,8 @@ private val dummyAudioList = listOf(
         data = "",
         duration = 23456,
         title = "Android Programming",
-        album = "album"
+        album = "album",
+        albumArtUri = "album".toUri(),
     ),
     Audio(
         uri = "".toUri(),
@@ -215,7 +219,8 @@ private val dummyAudioList = listOf(
         data = "",
         duration = 65788,
         title = "Android Programming",
-        album = "album"
+        album = "album",
+        albumArtUri = "album".toUri(),
     ),
     Audio(
         uri = "".toUri(),
@@ -225,7 +230,8 @@ private val dummyAudioList = listOf(
         data = "",
         duration = 234567,
         title = "Android Programming",
-        album = "album"
+        album = "album",
+        albumArtUri = "album".toUri(),
     ),
 
     )

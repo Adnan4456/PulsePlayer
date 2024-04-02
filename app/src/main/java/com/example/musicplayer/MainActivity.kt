@@ -81,7 +81,6 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -134,7 +133,6 @@ fun TopBar(scope: CoroutineScope, scaffoldState: ScaffoldState){
                     scaffoldState.drawerState.open()
                 }
             }) {
-//                Image(painter = painterResource(R.drawable.drawer_icon), contentDescription ="" )
                 Icon(Icons.Default.Menu,contentDescription = "")
             }
         },
@@ -262,9 +260,7 @@ fun DrawerItem(item: NavigationItem, selected: Boolean, onItemClick: (Navigation
             fontSize = 16.sp,
             color = Color.Black
         )
-
     }
-
 }
 
 @Composable
@@ -274,7 +270,6 @@ fun Navigation(navController: NavHostController ,
     NavHost(navController, startDestination = NavigationItem.Home.route){
         composable(NavigationItem.Home.route){
             HomeScreen(
-//            NowPlayingScreen(
                 progress = audioViewModel.currentAudioProgress.value,
                 onProgressChange ={
                     audioViewModel.seekTo(it)

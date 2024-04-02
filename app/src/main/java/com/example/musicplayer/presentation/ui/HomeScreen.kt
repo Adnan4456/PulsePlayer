@@ -20,7 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -30,6 +32,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import coil.compose.AsyncImage
 import com.example.musicplayer.R
 import com.example.musicplayer.data.model.Audio
 import com.example.musicplayer.data.utils.GradientAndBrush
@@ -50,7 +53,8 @@ private val dummyAudioList = listOf(
         data = "",
         duration = 12345,
         title = "Android Programming",
-        album = "album"
+        album = "album",
+        albumArtUri = "album".toUri(),
     ),
     Audio(
         uri = "".toUri(),
@@ -60,7 +64,8 @@ private val dummyAudioList = listOf(
         data = "",
         duration = 25678,
         title = "Android Programming",
-        album = "album"
+        album = "album",
+        albumArtUri = "album".toUri(),
     ),
     Audio(
         uri = "".toUri(),
@@ -70,7 +75,8 @@ private val dummyAudioList = listOf(
         data = "",
         duration = 8765454,
         title = "Android Programming",
-        album = "album"
+        album = "album",
+        albumArtUri = "album".toUri(),
     ),
     Audio(
         uri = "".toUri(),
@@ -80,7 +86,8 @@ private val dummyAudioList = listOf(
         data = "",
         duration = 23456,
         title = "Android Programming",
-        album = "album"
+        album = "album",
+        albumArtUri = "album".toUri(),
     ),
     Audio(
         uri = "".toUri(),
@@ -90,7 +97,8 @@ private val dummyAudioList = listOf(
         data = "",
         duration = 65788,
         title = "Android Programming",
-        album = "album"
+        album = "album",
+        albumArtUri = "album".toUri(),
     ),
     Audio(
         uri = "".toUri(),
@@ -100,7 +108,8 @@ private val dummyAudioList = listOf(
         data = "",
         duration = 234567,
         title = "Android Programming",
-        album = "album"
+        album = "album",
+        albumArtUri = "album".toUri(),
     ),
 
     )
@@ -209,7 +218,7 @@ fun BottomBarPlayer(
     Column(
         modifier = Modifier
             .padding(bottom = 10.dp)
-            .background(color = colorResource(R.color.background))
+            .background(color = MaterialTheme.colors.background)
     ) {
         Row(
             modifier = Modifier
@@ -253,6 +262,7 @@ val gradientBlue = listOf(
     Color(0xFF2196F3),
     Color(0xFF2196F3),
 )
+
 @Composable
 fun AudioItem(
     audio: Audio,
@@ -260,6 +270,15 @@ fun AudioItem(
 ) {
 
     val isEvenId = audio.id % 2L == 0L
+
+    val backgroundBrush: Brush = if (audio.albumArtUri == null) {
+        if (isEvenId) GradientAndBrush(true, colors = gradient)
+        else GradientAndBrush(false, colors = gradientBlue)
+    } else {
+        // Handle background brush when albumArtUri is available
+        // You can customize this part based on your design preference
+        SolidColor(MaterialTheme.colors.primary)
+    }
 
     Card(
         modifier = Modifier
@@ -279,20 +298,20 @@ fun AudioItem(
             Box(
                 modifier =
                 Modifier
-                    .size(30.dp)
+                    .size(50.dp)
                     .fillMaxHeight()
-                    .clip(RoundedCornerShape(5.dp))
+                    .clip(RoundedCornerShape(2.dp))
                     .background(
-                        brush =
-                        if (isEvenId) GradientAndBrush(true, colors = gradient)
-                        else GradientAndBrush(false, colors = gradientBlue)
+                        brush = backgroundBrush
                     ),
                     contentAlignment = Alignment.Center
-                ){
-                    Icon(
-                        painter =  painterResource(R.drawable.music),
-                        contentDescription = "",
-                        tint = Color.White)
+                ) {
+
+                AsyncImage(
+                    model = if (audio.albumArtUri != null) audio.albumArtUri
+                    else null,
+                    contentDescription = "audio image"
+                )
             }
 
             Spacer(modifier = Modifier.size(4.dp))
@@ -303,6 +322,7 @@ fun AudioItem(
                 Spacer(modifier = Modifier.size(4.dp))
                 Text(
                     text = audio.displayName,
+                    color = MaterialTheme.colors.onPrimary,
                     style = MaterialTheme.typography.subtitle1,
                     overflow = TextOverflow.Clip,
                     maxLines = 1
@@ -314,7 +334,7 @@ fun AudioItem(
                     maxLines = 1,
                     overflow = TextOverflow.Clip,
                     color = MaterialTheme.colors
-                        .onSurface
+                        .onPrimary
                         .copy(alpha = .5f)
                 )
             }
@@ -384,6 +404,7 @@ fun ArtistInfo(
                 style = MaterialTheme.typography.subtitle1,
                 overflow = TextOverflow.Clip,
                 modifier = Modifier.weight(1f),
+                color = MaterialTheme.colors.onPrimary,
                 maxLines = 1
             )
 
@@ -395,6 +416,7 @@ fun ArtistInfo(
                 style = MaterialTheme.typography.subtitle2,
                 overflow = TextOverflow.Clip,
                 maxLines = 1,
+                color = MaterialTheme.colors.onPrimary,
                 modifier = Modifier.weight(1f)
             )
         }
