@@ -78,7 +78,7 @@ constructor(@ApplicationContext val context: Context) {
                         val album = getString(albumColumn)
 
                         val albumArtUri = getAlbumArtUri(context, id)
-                        Log.d("album uri", albumArtUri.toString())
+//                        Log.d("album uri", albumArtUri.toString())
                         audioList += Audio(
                             uri, displayName, id, artist, data, duration, title, album, albumArtUri
                         )
