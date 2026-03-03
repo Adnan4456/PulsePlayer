@@ -277,7 +277,8 @@ fun DrawerItem(item: NavigationItem, selected: Boolean, onItemClick: (Navigation
 
 @Composable
 fun Navigation(navController: NavHostController ,
-               audioViewModel :AudioViewModel = hiltViewModel()){
+               audioViewModel :AudioViewModel = hiltViewModel()
+){
 
     NavHost(navController, startDestination = NavigationItem.Home.route){
         composable(NavigationItem.Home.route){

@@ -27,7 +27,7 @@ jobs:
         run: bash ./gradlew lint
 
       - name: Upload html test report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: lint.html
           path: app/build/reports/lint-results-debug.html
@@ -43,7 +43,7 @@ jobs:
         run: ./gradlew test
 
       - name: Upload test report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: unit_test_report
           path: app/build/reports/tests/testDebugUnitTest/

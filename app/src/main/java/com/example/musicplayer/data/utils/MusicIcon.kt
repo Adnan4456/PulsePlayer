@@ -45,7 +45,7 @@ fun MusicIcon(){
 
 @Preview
 @Composable
-fun PreView()
+fun Preview()
 {
     MusicIcon()
 }
