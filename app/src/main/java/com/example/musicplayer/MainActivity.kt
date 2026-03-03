@@ -2,8 +2,11 @@ package com.example.musicplayer
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -32,8 +34,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -43,7 +43,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.musicplayer.presentation.ui.AudioViewModel
 import com.example.musicplayer.presentation.ui.HomeScreen
 import com.example.musicplayer.presentation.ui.navigationdrawer.NavigationItem
-import com.example.musicplayer.ui.theme.MusicPlayerTheme
+import com.example.musicplayer.ui.theme.MusicTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,44 +56,56 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MusicPlayerTheme {
+            MusicTheme {
 
-                val permissionState = rememberPermissionState(
-                    permission = android.Manifest.permission.READ_EXTERNAL_STORAGE)
+//                val permissionState = rememberPermissionState(
+//                    permission = android.Manifest.permission.READ_EXTERNAL_STORAGE
+//                )
 
                 val lifecycleOwner = LocalLifecycleOwner.current
 
-                DisposableEffect(key1 =lifecycleOwner ){
-                    val  observer = LifecycleEventObserver{_ , event ->
+                val requestPermissionLauncher = rememberLauncherForActivityResult(
+                    ActivityResultContracts.RequestPermission()
+                ){isGranted ->
 
-                        if (event== Lifecycle.Event.ON_RESUME){
-                            permissionState.launchPermissionRequest()
-                        }
-                    }
+//                        permissionState.launchPermissionRequest()
+                    Toast.makeText(applicationContext,"${isGranted}",Toast.LENGTH_LONG).show()
 
-                    lifecycleOwner.lifecycle.addObserver(observer)
-
-
-                    onDispose {
-                        lifecycleOwner.lifecycle.removeObserver(observer)
-
-                    }
                 }
 
-                // A surface container using the 'background' color from the theme
+//                DisposableEffect(key1 = lifecycleOwner) {
+//                    val observer = LifecycleEventObserver { _, event ->
+//
+//                        if (event == Lifecycle.Event.ON_RESUME) {
+//                            permissionState.launchPermissionRequest()
+//                        }
+//                    }
+//
+//                    lifecycleOwner.lifecycle.addObserver(observer)
+//
+//
+//                    onDispose {
+//                        lifecycleOwner.lifecycle.removeObserver(observer)
+//
+//                    }
+//                }
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    if (permissionState.hasPermission){
-
-                        MainScreen()
-                    }else
-                    {
-                        Box(contentAlignment = Alignment.Center){
-                            Text(text = "Grant permission first to use application")
-                        }
-                    }
+                    MainScreen()
+//                    requestPermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+//                    if (permissionState.hasPermission){
+//
+//                        MainScreen()
+//                    }else
+//                    {
+//                        Box(contentAlignment = Alignment.Center){
+//                            Text(text = "Grant permission first to use application")
+//                            requestPermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+//                        }
+//                    }
                 }
             }
         }
@@ -133,7 +145,6 @@ fun TopBar(scope: CoroutineScope, scaffoldState: ScaffoldState){
                     scaffoldState.drawerState.open()
                 }
             }) {
-//                Image(painter = painterResource(R.drawable.drawer_icon), contentDescription ="" )
                 Icon(Icons.Default.Menu,contentDescription = "")
             }
         },
@@ -261,9 +272,7 @@ fun DrawerItem(item: NavigationItem, selected: Boolean, onItemClick: (Navigation
             fontSize = 16.sp,
             color = Color.Black
         )
-
     }
-
 }
 
 @Composable
@@ -279,16 +288,19 @@ fun Navigation(navController: NavHostController ,
                 } ,
                 isAudioPlaying = audioViewModel.isAudioPlaying,
                 audioList = audioViewModel.audioList,
-                currentPlayingAudio =audioViewModel.currentPlayingAudio.value ,
+                currentPlayingAudio = audioViewModel.currentPlayingAudio.value,
                 onStart = {
                     audioViewModel.playAudio(it)
-                } ,
+                },
                 onItemClick = {
                     audioViewModel.playAudio(it)
                 },
                 onNext = {
                     audioViewModel.skipToNext()
                 },
+                onPrevious = {
+                    audioViewModel.skipToPrevious()
+                }
             )
         }
 

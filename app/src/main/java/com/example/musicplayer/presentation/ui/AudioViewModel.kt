@@ -133,7 +133,6 @@ class AudioViewModel @Inject constructor(
         }
     }
 
-
 //    fun stopPlayBack(){
 //        serviceConnection.transportControll.stop()
 //    }
@@ -141,13 +140,17 @@ class AudioViewModel @Inject constructor(
 //    fun fastForward(){
 //        serviceConnection.fastForward()
 //    }
-//
-//    fun rewind(){
-//        serviceConnection.rewind()
-//    }
+
+    fun rewind() {
+        serviceConnection.rewind()
+    }
 
     fun skipToNext() {
         serviceConnection.skipToNext()
+    }
+
+    fun skipToPrevious() {
+        serviceConnection.skipToPrevious()
     }
 
     fun seekTo(value: Float) {
@@ -158,7 +161,8 @@ class AudioViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        serviceConnection.unsubscribe(constants.MEDIA_ROOT_ID ,
+        serviceConnection.unsubscribe(
+            constants.MEDIA_ROOT_ID,
             object :MediaBrowserCompat.SubscriptionCallback(){})
         updatePosition = false
 

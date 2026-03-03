@@ -3,6 +3,7 @@ package com.example.musicplayer.data.model
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
+import android.net.Uri
 import android.provider.MediaStore
 import android.provider.MediaStore.Audio.Media
 import android.util.Log
@@ -23,8 +24,6 @@ constructor(@ApplicationContext val context: Context) {
         MediaStore.Audio.AudioColumns.DURATION,
         MediaStore.Audio.AudioColumns.TITLE,
         MediaStore.Audio.AudioColumns.ALBUM,
-//        MediaStore.Audio.Albums.ALBUM_ART
-
     )
 
     //selection clause to filter data
@@ -77,15 +76,47 @@ constructor(@ApplicationContext val context: Context) {
                             id
                         )
                         val album = getString(albumColumn)
-                        Log.d("album" , album.toString())
 
+                        val albumArtUri = getAlbumArtUri(context, id)
+//                        Log.d("album uri", albumArtUri.toString())
                         audioList += Audio(
-                            uri , displayName, id , artist , data , duration , title , album
+                            uri, displayName, id, artist, data, duration, title, album, albumArtUri
                         )
                     }
                 }
             }
         }
-        return  audioList
+        return audioList
+    }
+
+    private fun getAlbumArtUri(context: Context, audioId: Long): Uri? {
+        val albumId = getAlbumId(context, audioId)
+        return if (albumId != -1L) {
+            ContentUris.withAppendedId(
+                Uri.parse("content://media/external/audio/albumart"),
+                albumId
+            )
+        } else {
+            null
+        }
+    }
+
+    private fun getAlbumId(context: Context, audioId: Long): Long {
+        val projection = arrayOf(MediaStore.Audio.AudioColumns.ALBUM_ID)
+        val selection = "${MediaStore.Audio.AudioColumns._ID} = ?"
+        val selectionArgs = arrayOf(audioId.toString())
+
+        context.contentResolver.query(
+            Media.EXTERNAL_CONTENT_URI,
+            projection,
+            selection,
+            selectionArgs,
+            null
+        )?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                return cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM_ID))
+            }
+        }
+        return -1L
     }
 }
